@@ -43,6 +43,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+function makeLoader() {
+  const l = new GLTFLoader();
+  const d = new DRACOLoader();
+  d.setDecoderPath("./vendor/draco/");
+  l.setDRACOLoader(d);
+  return l;
+}
+
 
 const view = document.getElementById("view");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -69,7 +78,7 @@ const RU = { "AvatarF.w_base": "базовый топ (bodice)", "AvatarF.w_swea
   "AvatarF.w_gusset": "вставка (gusset)", "AvatarF.short03": "причёска" };
 const DEFAULT_ON = ["AvatarF.body", "AvatarF.short03", "AvatarF.w_base", "AvatarF.w_jeans", "AvatarF.w_boots", "AvatarF.w_gusset"];
 
-new GLTFLoader().load("layers.glb", (gltf) => {
+makeLoader().load("layers.glb", (gltf) => {
   const root = gltf.scene;
   scene.add(root);
   const meshes = [];
