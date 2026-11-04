@@ -41,6 +41,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+function makeLoader() {
+  const l = new GLTFLoader();
+  const d = new DRACOLoader();
+  d.setDecoderPath("./vendor/draco/");
+  l.setDRACOLoader(d);
+  return l;
+}
+
 const view = document.getElementById("view");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(view.clientWidth, view.clientHeight);
@@ -61,7 +70,7 @@ function load(src, btn) {
   if (current) { scene.remove(current); current = null; }
   document.querySelectorAll("button[data-src]").forEach(b => b.classList.remove("on"));
   if (btn) btn.classList.add("on");
-  new GLTFLoader().load(src, (g) => {
+  makeLoader().load(src, (g) => {
     current = g.scene;
     scene.add(current);
     const box = new THREE.Box3().setFromObject(current);
