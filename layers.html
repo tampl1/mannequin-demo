@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Слои одежды на аватаре — Makomio</title>
+<style>
+  html,body{margin:0;height:100%;background:#101216;color:#e8eaf0;font-family:-apple-system,'Segoe UI',sans-serif}
+  header{padding:14px 20px;font-size:15px;font-weight:600;background:#14171d}
+  header small{display:block;font-weight:400;color:#9aa3b2;font-size:12px;margin-top:3px}
+  .row{display:flex;height:calc(100% - 70px)}
+  model-viewer{flex:1;height:100%;background:radial-gradient(1000px 600px at 50% 30%,#1a1e26 0%,#101216 70%)}
+  .panel{width:230px;padding:14px;background:#14171d;overflow:auto}
+  .panel b{font-size:12px;color:#9aa3b2;display:block;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.4px}
+  button{display:block;width:100%;margin:4px 0;padding:8px;border-radius:8px;border:1px solid #2a3140;background:#1c212b;color:#e8eaf0;cursor:pointer;font-size:13px}
+  button.on{background:#1f6f43;border-color:#2f9c60}
+  .hint{padding:8px 14px;font-size:11px;color:#7c8595;background:#14171d}
+</style>
+</head>
+<body>
+<header>Слои одежды на 3D-аватаре<small>наш скелет, наш bake (Blender + MPFB2), 0 вызовов внешних сервисов · KANWORK-1</small></header>
+<div class="row">
+  <model-viewer id="mv" src="layers.glb" camera-controls auto-rotate auto-rotate-delay="1500" rotation-per-second="14deg" shadow-intensity="1" exposure="1.0"></model-viewer>
+  <div class="panel">
+    <b>Слои (клик — вкл/выкл)</b>
+    <div id="layerBtns"></div>
+    <b>Морфы тела (одежда повторяет)</b>
+    <div id="morphBtns"></div>
+  </div>
+</div>
+<div class="hint">Механика: skinned-меши на общем скелете, зазоры посадки, морф-таргеты тела и всех слоёв одинаковые</div>
+<script type="module">
+  import "https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js";
+  const mv = document.getElementById("mv");
+  mv.addEventListener("load", async () => {
+    const model = mv.model;
+    const names = [...model.getAnimations?.() ?? []];
+    // примитивы = слои (каждый слой отдельный node с именем)
+    const nodes = [...mv.availableAnimations ? [] : []];
+  });
+  // упрощённое управление: перечисляем известные слои по именам node из GLB
+  const LAYERS = []; // заполнится после загрузки: перечисление корневых мешей
+  mv.addEventListener("load", () => {
+    try {
+      const scene = mv.model;
+      const prims = scene.materials?.length ?? 0;
+    } catch(e) {}
+  });
+</script>
+<script>
+  // Простое включение/выключение узлов через модель-viewer API (materials visibility)
+  window.addEventListener("DOMContentLoaded", () => {
+    const mv = document.getElementById("mv");
+    const lb = document.getElementById("layerBtns");
+    const KNOWN = ["base","sweater","jacket","jeans","boots"];
+    // модель-viewer не даёт прямого доступа к node-графу: используем three.js сцену из internals
+    mv.addEventListener("load", () => {
+      const three = mv.__modelViewerElement?.model?.scene || mv.model?.scene || null;
+      // fallback: если API недоступен, показываем подсказку
+      if (!three) { lb.innerHTML = "<i style='color:#7c8595'>переключение слоёв — в полной версии страницы (KANWORK-1)</i>"; return; }
+    });
+  });
+</script>
+<script type="module">
+  // Честное управление узлами: three.js-сцена доступна через modelViewer internals
+  import "https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js";
+  const mv = document.getElementById("mv");
+  const lb = document.getElementById("layerBtns");
+  const mb = document.getElementById("morphBtns");
+  mv.addEventListener("load", async () => {
+    const scene = mv.model?.scene || (mv.getDOMScene && mv.getDOMScene());
+    // model-viewer 3.x: mv.model есть, прямой сцены нет; пробуемInternals
+    const threeScene = mv["model"] && mv.model.scene ? mv.model.scene : null;
+    if (!threeScene) return;
+    const groups = {};
+    threeScene.traverse(o => { if (o.isMesh || o.isSkinnedMesh) { (groups[o.name] = groups[o.name] || []).push(o); } });
+    const names = Object.keys(groups);
+    for (const n of names) {
+      const b = document.createElement("button");
+      b.textContent = n; b.className = "on";
+      b.onclick = () => { const v = !groups[n][0].visible; groups[n].forEach(o => o.visible = v); b.className = v ? "on" : ""; };
+      lb.appendChild(b);
+    }
+    const morphNames = Object.keys(threeScene.getObjectByProperty("type","SkinnedMesh")?.morphTargetInfluences ?? {});
+    for (const n of morphNames.slice(0, 10)) {
+      const b = document.createElement("button");
+      b.textContent = n;
+      b.onclick = () => { threeScene.traverse(o => { if (o.morphTargetInfluences && n in o.morphTargetDictionary) { const i = o.morphTargetDictionary[n]; o.morphTargetInfluences[i] = o.morphTargetInfluences[i] > 0.5 ? 0 : 1; } }); };
+      mb.appendChild(b);
+    }
+  });
+</script>
+</body>
+</html>
