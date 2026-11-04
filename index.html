@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Манекен 3D — Makomio</title>
+<style>
+  html,body{margin:0;height:100%;background:#101216;color:#e8eaf0;font-family:-apple-system,'Segoe UI',sans-serif}
+  header{position:fixed;top:0;left:0;right:0;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(16,18,22,.72);backdrop-filter:blur(8px);z-index:2}
+  header h1{font-size:15px;margin:0;font-weight:600}
+  header span{font-size:12px;color:#9aa3b2}
+  model-viewer{width:100%;height:100%;background:radial-gradient(1200px 700px at 50% 30%,#1a1e26 0%,#101216 70%)}
+  .hint{position:fixed;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:#7c8595;z-index:2}
+</style>
+</head>
+<body>
+<header><h1>Манекен 3D · проба качества</h1><span>Makomio avatar track · <a href="layers.html" style="color:#7fb4ff">демо слоёв одежды →</a></span></header>
+<model-viewer src="mannequin.glb" camera-controls auto-rotate auto-rotate-delay="1200" rotation-per-second="18deg"
+  shadow-intensity="1" exposure="1.05" environment-image="neutral" interaction-prompt="basic"></model-viewer>
+<div class="hint">Мышь — вращать · колесо — приближать · модель генерировалась как проба «красивого манекена»</div>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</body>
+</html>
