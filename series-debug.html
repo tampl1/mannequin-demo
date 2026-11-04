@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Серия манекенов — Makomio</title>
+<style>
+  html,body{margin:0;height:100%;background:#101216;color:#e8eaf0;font-family:-apple-system,'Segoe UI',sans-serif;overflow:hidden}
+  header{padding:12px 18px;font-size:15px;font-weight:600;background:#14171d}
+  header small{display:block;font-weight:400;color:#9aa3b2;font-size:12px;margin-top:2px}
+  .row{display:flex;height:calc(100% - 92px)}
+  #view{flex:1;height:100%}
+  .panel{width:220px;padding:12px 14px;background:#14171d}
+  .panel b{font-size:11px;color:#9aa3b2;display:block;margin:8px 0;text-transform:uppercase;letter-spacing:.5px}
+  button{display:block;width:100%;margin:5px 0;padding:10px;border-radius:8px;border:1px solid #2a3140;background:#1c212b;color:#e8eaf0;cursor:pointer;font-size:13px;text-align:left}
+  button.on{background:#1f4f6f;border-color:#2f7ca0}
+  .hint{padding:8px 14px;font-size:11px;color:#7c8595;background:#14171d}
+  a{color:#7fb4ff}
+</style>
+</head>
+<body>
+<header>Серия манекенов · проба качества<small>R&D на внешней платформе (Meshy, preview→refine с PBR) — в прод идёт только наш контур; манекен = носитель тела, лицо натягиваем отдельно</small></header>
+<div class="row">
+  <div id="view"></div>
+  <div class="panel">
+    <b>Манекены</b>
+    <button data-src="mannequin.glb" class="on">Женщина · 25–30</button>
+    <button data-src="mannequin-man.glb">Мужчина · 35</button>
+    <button data-src="mannequin-teen.glb">Подросток · 15</button>
+    <b>Ещё</b>
+    <a href="index.html">← первый манекен</a><br><br>
+    <a href="layers.html">демо слоёв одежды →</a>
+  </div>
+</div>
+window.__errs=[];
+addEventListener("error",e=>__errs.push(e.message));
+addEventListener("unhandledrejection",e=>__errs.push(String(e.reason)));
+setInterval(()=>{const h=document.querySelector(".hint");if(h&&__errs.length)h.textContent="ERR: "+__errs.join(" | ").slice(0,180);},700);
+<div class="hint">Мышь — вращать · колесо — приблизить</div>
+<script type="importmap">
+{"imports":{"three":"./vendor/three.module.js",
+"three/addons/":"./vendor/addons/"}}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+function makeLoader() {
+  const l = new GLTFLoader();
+  const d = new DRACOLoader();
+  d.setDecoderPath("./vendor/draco/");
+  l.setDRACOLoader(d);
+  return l;
+}
+
+const view = document.getElementById("view");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(view.clientWidth, view.clientHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+view.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x101216);
+const camera = new THREE.PerspectiveCamera(35, view.clientWidth / view.clientHeight, 0.01, 100);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xbfd0ff, 0x2a2520, 1.1));
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(2.5, 4, 2.5); key.castShadow = true; scene.add(key);
+scene.add(new THREE.GridHelper(6, 24, 0x2a3140, 0x1c212b));
+let current = null;
+function load(src, btn) {
+  if (current) { scene.remove(current); current = null; }
+  document.querySelectorAll("button[data-src]").forEach(b => b.classList.remove("on"));
+  if (btn) btn.classList.add("on");
+  makeLoader().load(src, (g) => {
+    current = g.scene;
+    scene.add(current);
+    const box = new THREE.Box3().setFromObject(current);
+    const h = box.max.y - box.min.y;
+    camera.position.set(0, box.max.y * 0.62, h * 1.9);
+    controls.target.set(0, box.max.y * 0.52, 0);
+  });
+}
+document.querySelectorAll("button[data-src]").forEach(b => b.onclick = () => load(b.dataset.src, b));
+load("mannequin.glb", document.querySelector("button[data-src='mannequin.glb']"));
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+addEventListener("resize", () => {
+  camera.aspect = view.clientWidth / view.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(view.clientWidth, view.clientHeight);
+});
+</script>
+</body>
+</html>
