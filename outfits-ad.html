@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAKOMIO — гардероб оживает</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0d0b09; color:#efe9e2; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
+  .wrap { max-width:1080px; margin:0 auto; padding:48px 24px 80px; }
+  header { text-align:center; margin-bottom:40px; }
+  .brand { font-size:13px; letter-spacing:6px; color:#b8a894; text-transform:uppercase; }
+  h1 { font-size:clamp(28px,5vw,52px); font-weight:200; letter-spacing:1px; margin:18px 0 10px; }
+  h1 b { font-weight:600; }
+  .sub { color:#9a8f82; font-size:15px; max-width:560px; margin:0 auto; line-height:1.6; }
+  .player { position:relative; border-radius:18px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.6); background:#000; }
+  .player video { display:block; width:100%; height:auto; }
+  .chips { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:28px 0 8px; }
+  .chip { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#b8a894; border:1px solid #3a332c; border-radius:999px; padding:7px 16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:36px; }
+  .card { position:relative; border-radius:14px; overflow:hidden; background:#161310; border:1px solid #262019; }
+  .card img { width:100%; display:block; aspect-ratio:3/4; object-fit:cover; transition:transform .5s; }
+  .card:hover img { transform:scale(1.04); }
+  .card .tag { position:absolute; left:12px; bottom:12px; background:rgba(13,11,9,.82); backdrop-filter:blur(6px); padding:6px 14px; border-radius:8px; font-size:13px; letter-spacing:1px; }
+  .card .tag span { color:#b8a894; font-size:11px; display:block; letter-spacing:2px; text-transform:uppercase; }
+  .how { margin-top:52px; border-top:1px solid #262019; padding-top:32px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
+  .step { font-size:14px; color:#9a8f82; line-height:1.7; }
+  .step b { display:block; color:#efe9e2; font-size:13px; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  footer { margin-top:56px; text-align:center; color:#6f665c; font-size:13px; }
+  footer a { color:#b8a894; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Makomio · EntityHome</div>
+    <h1>Одно лицо. <b>Пять образов.</b></h1>
+    <div class="sub">Фотореалистичный рекламный ролик 33 секунды: один персонаж, пять сцен, русская озвучка. Сгенерировано и смонтировано агентом — без студий и съёмочных команд.</div>
+  </header>
+
+  <div class="player">
+    <video controls playsinline preload="metadata" poster="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_morning.jpg">
+      <source src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/video/outfits_final.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="chips">
+    <div class="chip">33 сек</div>
+    <div class="chip">1440×1920</div>
+    <div class="chip">5 сцен · 5 образов</div>
+    <div class="chip">Русская озвучка</div>
+    <div class="chip">Одно лицо во всех сценах</div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><img src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_morning.jpg" alt="Утро"><div class="tag"><span>Сцена 1 · 0:00</span>Шёлковая блузка</div></div>
+    <div class="card"><img src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_office.jpg" alt="Офис"><div class="tag"><span>Сцена 2 · 0:07</span>Блейзер · офис</div></div>
+    <div class="card"><img src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_street.jpg" alt="Улица"><div class="tag"><span>Сцена 3 · 0:13</span>Тренч · улица</div></div>
+    <div class="card"><img src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_evening.jpg" alt="Вечер"><div class="tag"><span>Сцена 4 · 0:20</span>Чёрное платье</div></div>
+    <div class="card"><img src="https://raw.githubusercontent.com/tampl1/mannequin-demo/main/stills/outfit_casual.jpg" alt="Дома"><div class="tag"><span>Сцена 5 · 0:26</span>Дома · она настоящая</div></div>
+  </div>
+
+  <div class="how">
+    <div class="step"><b>1 · Кадры</b>Пять сцен по одному описанию персонажа — лицо стабильно между генерациями. image-01, 864×1152.</div>
+    <div class="step"><b>2 · Оживление</b>Каждый кадр → 6,6 сек видео с движением и мимикой. Hailuo H3, 2K, image-to-video.</div>
+    <div class="step"><b>3 · Сборка</b>Склейка, русская озвучка (наш TTS), шумовой фон, титр, фейд. ffmpeg.</div>
+  </div>
+
+  <footer>Файлы: <a href="https://github.com/tampl1/mannequin-demo">github.com/tampl1/mannequin-demo</a> · Локальный файл: /tmp/outfits_final.mp4</footer>
+</div>
+</body>
+</html>
